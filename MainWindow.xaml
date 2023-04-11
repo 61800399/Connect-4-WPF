@@ -5,11 +5,20 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Connect_4_WPF"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Connect Four" Height="450" Width="800">
     <Grid>
-        <Grid x:Name="Grid_board" Margin="100,42,100,42" Height="350" Width="600">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="511*"/>
+            <ColumnDefinition Width="289*"/>
+        </Grid.ColumnDefinitions>
+        <Grid x:Name="Grid_board" Margin="100,42,100,42" Height="350" Width="600" Grid.ColumnSpan="2">
             <Label x:Name="TestSquare" Content="" Height="55" Margin="10,10,508,285" Width="82" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
         </Grid>
+        <Label x:Name="WinnerLab" Content="" HorizontalAlignment="Left" Margin="254,3,0,0" VerticalAlignment="Top" Height="39" Width="342" FontSize="24" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.ColumnSpan="2"/>
+        <Button x:Name="Again" Content="Play Again?" HorizontalAlignment="Left" Margin="262,250,0,0" VerticalAlignment="Top" Height="47" Width="276" FontSize="24" Visibility="Collapsed" Click="Reset" Grid.ColumnSpan="2"/>
+        <Button x:Name="RestartBut" Content="Restart" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="45" Width="117" Visibility="Collapsed" Click="Reset"/>
+
 
     </Grid>
+
 </Window>

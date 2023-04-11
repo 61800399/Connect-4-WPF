@@ -22,11 +22,13 @@ namespace Connect_4_WPF
     {
         private Board _board = new Board();
         public int player { get; set; } = 1;
-        private int Y { get; set; }
+        private int _Y { get; set; }
+        private bool Win;
         public MainWindow()
         {
             InitializeComponent();
             Make_Grid();
+            WinnerLab.Content = "it is player 1's turn";
         }
         private void Make_Grid()
         {
@@ -48,14 +50,15 @@ namespace Connect_4_WPF
                     Bmargin = TestSquare.Margin.Bottom - (TestSquare.Height * Y);
                     _label.Width = TestSquare.Width;
                     _label.Height = TestSquare.Height;
-                    _label.Content = "O";
+                    _label.Content = "🔴";
                     _label.Foreground = Brushes.White;
-                    _label.Background = Brushes.Black;
+                    _label.Background = Brushes.LightGray;
                     _label.VerticalContentAlignment = VerticalAlignment.Center;
                     _label.HorizontalContentAlignment = HorizontalAlignment.Center;
                     _label.FontSize = 24;
                     _label.Margin = new Thickness(Lmargin, Tmargin, Rmargin, Bmargin);
                     _label.MouseLeftButtonDown += new MouseButtonEventHandler(OnClick);
+                    _label.MouseMove += new MouseEventHandler(Highlight);
                     int[] Location = new int[2];
                     Location = Get_Coordinates(_label.Margin.Top, TestSquare.Height, _label.Margin.Left, TestSquare.Width);
                     _label.Tag = $"{Location[0]}, {Location[1]}";
@@ -76,28 +79,58 @@ namespace Connect_4_WPF
         }
         private void OnClick(object sender, RoutedEventArgs e)
         {
+            var color = Brushes.Black;
+            if (Win == true)
+            {
+                return;
+            }
             int[] Coordinates = new int[2];
             Label Lab = sender as Label;
             Coordinates = Get_Coordinates(Lab.Margin.Top, TestSquare.Height, Lab.Margin.Left, TestSquare.Width);
-            Y = Board.Get_Y(Coordinates[0], _board.Grid, player);
-            string txt = "";
+            _Y = Board.Get_Y(Coordinates[0], _board.Grid, player, true);
+            if (_Y == 48)
+            {
+                return;
+            }
             if (player == 1)
             {
-                txt = "R";
+                color = Brushes.Red;
             }
             else
             {
-                txt = "Y";
+                color = Brushes.Yellow;
             }
+            int EmptyCount = 0;
             foreach (Label L in Grid_board.Children)
             {
-                if ((string)L.Tag == $"{Coordinates[0]}, {Y}")
+                if ((string)L.Tag == $"{Coordinates[0]}, {_Y}")
                 {
-                    L.Content = txt;
+                    L.Foreground = color;
                 }
-                
+                else if (L.Foreground == Brushes.White || L.Foreground == new SolidColorBrush(Color.FromArgb(50, 255, 0, 0)) || L.Foreground == new SolidColorBrush(Color.FromArgb(50, 255, 255, 0)))
+                {
+                    EmptyCount++;
+                }
+            }
+            if (EmptyCount < 43)
+            {
+                RestartBut.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                RestartBut.Visibility = Visibility.Collapsed;
+            }
+            if (Player.Check_Win(player, _board.Grid))
+            {
+                Win = true;
+                WinnerLab.Content = $"player {player} won";
+                Again.Content = "Play again?";
+                Again.Visibility = Visibility.Visible;
+                RestartBut.Visibility = Visibility.Collapsed;
+                return;
             }
             player = Board.Switch_Player(player);
+            WinnerLab.Content = $"it is player {player}'s turn";
         }
         private static int[] Get_Coordinates(double TopDistance, double Hdiv, double LeftDistance, double Wdiv)
         {
@@ -109,6 +142,63 @@ namespace Connect_4_WPF
             };
             return coords;
         }
-        
+
+        private void Reset(object sender, RoutedEventArgs e)
+        {
+            _board = new Board();
+            player = 1;
+            Grid_board.Children.Clear();
+            Make_Grid();
+            Again.Visibility = Visibility.Collapsed;
+            WinnerLab.Content = "it is player 1's turn";
+            Win = false;
+        }
+        private void Highlight(object sender, RoutedEventArgs e)
+        {
+            if (Win)
+            {
+                return;
+            }
+            Label Lab = sender as Label;
+            string[] Pos = Lab.Tag.ToString().Split(',');
+            //Pos[0].Replace(" ", null);
+            int.TryParse(Pos[0], out int X);
+            int.TryParse(Pos[1], out int Y);
+            //MessageBox.Show($"{Pos[0]}, {Pos[1]}");
+            int[] Coordinates = new int[2];
+            Coordinates = Get_Coordinates(Lab.Margin.Top, TestSquare.Height, Lab.Margin.Left, TestSquare.Width);
+            _Y = Board.Get_Y(Coordinates[0], _board.Grid, player, false);
+            SolidColorBrush NewColor;
+            if (_Y == 48)
+            {
+                return;
+            }
+            if (player == 1)
+            {
+                NewColor = new SolidColorBrush(Color.FromArgb(50, 255, 0, 0));
+            }
+            else
+            {
+                NewColor = new SolidColorBrush(Color.FromArgb(50, 255, 255, 0));
+            }
+            
+            foreach (Label L in Grid_board.Children)
+            {
+                if (L.Foreground == Brushes.Red || L.Foreground == Brushes.Yellow)
+                {
+                    continue;
+                }
+                if ((string)L.Tag == $"{Coordinates[0]}, {_Y}" && L.Foreground == Brushes.White)
+                {
+                    L.Foreground = NewColor;
+                }
+                else if ((string)L.Tag != $"{Coordinates[0]}, {_Y}")
+                {
+                    L.Foreground = Brushes.White;
+                }
+                
+                
+            }
+        }
     }
 }

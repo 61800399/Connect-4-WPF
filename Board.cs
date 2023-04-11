@@ -35,14 +35,14 @@ public class Board
         }
         return x - 1;
     }
-    public static int Get_Y(int x, List<List<string>> board, int Player)
+    public static int Get_Y(int x, List<List<string>> board, int Player, bool place)
     {
         int y_pos = 0;
         for (int y = 0; y < 6; y++)
         {
             if (board[0][x] != " ")
             {
-                throw new Exception("");
+                return 48;
             }
             else if (y >= 5 || board[y + 1][x] != " ")
             {
@@ -50,14 +50,19 @@ public class Board
                 break;
             }
         }
-        if (Player == 1)
+        if (place)
         {
-            board[y_pos][x] = "R";
+            if (Player == 1)
+            {
+                board[y_pos][x] = "R";
+            }
+            else
+            {
+                board[y_pos][x] = "Y";
+            }
         }
-        else
-        {
-            board[y_pos][x] = "Y";
-        }
+        
+        
         return y_pos;
     }
     public static int Switch_Player(int Player)

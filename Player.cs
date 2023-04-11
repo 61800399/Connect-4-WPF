@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Windows;
 
 public class Player
 {
@@ -19,84 +20,68 @@ public class Player
 		win = H_win(board) || V_win(board) || D_win(board);
 
 
-        if (win & player == 1)
-        {
-            
-            return true;
-        }
-        else if (win & player == 2)
-        {
-            
-            return true;
-        }
+		if (win & player == 1)
+		{
+			return true;
+		}
+		else if (win & player == 2)
+		{
+
+			return true;
+		}
 		else
 		{
-            return false;
-        }
-       
-    }
+			return false;
+		}
+
+	}
 	private static bool H_win(List<List<string>> board) // declares any wins by horizontal plane
 	{
-		int p1_wins;
-		int p2_wins;
-        for (int y = 0; y < 6; y++)
+		for (int y = 0; y < 6; y++)
 		{
-            p1_wins = 0;
-            p2_wins = 0;
-            for (int x = 0; x < 7; x++)
+			for (int x = 0; x < 4; x++)
 			{
-				if (board[y][x] == "R")
+				if (board[y][x] == "R" || board[y][x] == "Y")
 				{
-					p1_wins++;
-					p2_wins = 0;
+					string current = board[y][x];
+					if (board[y][x + 1] == current && board[y][x + 2] == current && board[y][x + 3] == current)
+					{
+						return true;
+					}
 				}
-				else if (board[y][x] == "Y")
-				{
-					p2_wins++;
-					p1_wins = 0;
-				}
-			}
-			if (p1_wins >= 4 || p2_wins >= 4)
-			{
-				return true;
 			}
 		}
 		return false;
 	}
 	private static bool V_win(List<List<string>> board)
 	{
-		int p1_wins;
-		int p2_wins;
+		uint wins = 0;
 		for (int x = 0; x < 7; x++)
 		{
-			p1_wins = 0;
-			p2_wins = 0;
-			for (int y = 0; y < 6; y++)
+			for (int y = 5; y >= 0; y--)
 			{
-                if (board[y][x] == "R")
-                {
-                    p1_wins++;
-                    p2_wins = 0;
-                }
-				else if (board[y][x] == "Y")
+				if (board[y][x] == "R" || board[y][x] == "Y")
 				{
-					p2_wins++;
-                    p1_wins = 0;
-                }
-            }
-            if (p1_wins >= 4 || p2_wins >= 4)
-            {
-                return true;
-            }
-        }
+					if (y - 3 < 0)
+					{
+						continue;
+					}
+					string current = board[y][x];
+					if (board[y - 1][x] == current && board[y - 2][x] == current && board[y - 3][x] == current)
+					{
+						return true;
+					}
+				}
+			}
+		}
 		return false;
 	}
 	private static bool D_win(List<List<string>> board)
 	{
 		int y_ax = 5;
 		int x_ax = 0;
-		
-		
+
+
 		while (true)
 		{
 			if (x_ax > 6)
@@ -108,43 +93,43 @@ public class Player
 			{
 				break;
 			}
-            if (board[y_ax][x_ax] == "R" || board[y_ax][x_ax] == "Y")
-            {
-                if (Check_BLU(x_ax, y_ax, board))
-                {
-                    return true;
-                }
-            }
+			if (board[y_ax][x_ax] == "R" || board[y_ax][x_ax] == "Y")
+			{
+				if (Check_BLU(x_ax, y_ax, board))
+				{
+					return true;
+				}
+			}
 			x_ax++;
-        }
+		}
 
 		y_ax = 0;
 		while (true)
 		{
-            if (x_ax > 6)
-            {
-                x_ax = 0;
-                y_ax++;
-            }
-            if (y_ax > 5 || y_ax < 0)
-            {
-                break;
-            }
-            if (board[y_ax][x_ax] == "R" || board[y_ax][x_ax] == "Y")
-            {
-                if (Check_TLD(x_ax, y_ax, board))
-                {
-                    return true;
-                }
-            }
-            x_ax++;
-        }
+			if (x_ax > 6)
+			{
+				x_ax = 0;
+				y_ax++;
+			}
+			if (y_ax > 5 || y_ax < 0)
+			{
+				break;
+			}
+			if (board[y_ax][x_ax] == "R" || board[y_ax][x_ax] == "Y")
+			{
+				if (Check_TLD(x_ax, y_ax, board))
+				{
+					return true;
+				}
+			}
+			x_ax++;
+		}
 		return false;
-		
-	
-        
-        
-    }
+
+
+
+
+	}
 	/// <summary>
 	/// Checks if the player wins from a bottom left - top right
 	/// </summary>
@@ -158,36 +143,30 @@ public class Player
 		{
 			return false;
 		}
+		string current = board[Coord_y][Coord_x];
 		string next_check1 = board[Coord_y - 1][Coord_x + 1];
-        string next_check2 = board[Coord_y - 2][Coord_x + 2];
-        string next_check3 = board[Coord_y - 3][Coord_x + 3];
-		if (next_check1 == "R" && next_check2 == "R" && next_check3 == "R")
-		{
-			return true;
-		}
-		else if (next_check1 == "Y" && next_check2 == "Y" && next_check3 == "Y")
+		string next_check2 = board[Coord_y - 2][Coord_x + 2];
+		string next_check3 = board[Coord_y - 3][Coord_x + 3];
+		if (next_check1 == current && next_check2 == current && next_check3 == current)
 		{
 			return true;
 		}
 		return false;
-    }
+	}
 	private static bool Check_TLD(int Coord_x, int Coord_y, List<List<string>> board)
 	{
-        if (Coord_x > 3 || Coord_y > 2)
-        {
-            return false;
-        }
-        string next_check1 = board[Coord_y + 1][Coord_x + 1];
-        string next_check2 = board[Coord_y + 2][Coord_x + 2];
-        string next_check3 = board[Coord_y + 3][Coord_x + 3];
-        if (next_check1 == "R" && next_check2 == "R" && next_check3 == "R")
-        {
-            return true;
-        }
-        else if (next_check1 == "Y" && next_check2 == "Y" && next_check3 == "Y")
-        {
-            return true;
-        }
-        return false;
-    }
+		if (Coord_x > 3 || Coord_y > 2)
+		{
+			return false;
+		}
+		string current = board[Coord_y][Coord_x];
+		string next_check1 = board[Coord_y + 1][Coord_x + 1];
+		string next_check2 = board[Coord_y + 2][Coord_x + 2];
+		string next_check3 = board[Coord_y + 3][Coord_x + 3];
+		if (next_check1 == current && next_check2 == current && next_check3 == current)
+		{
+			return true;
+		}
+		return false;
+	}
 }
